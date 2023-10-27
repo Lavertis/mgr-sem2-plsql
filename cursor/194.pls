@@ -29,3 +29,44 @@ begin
                 end loop;
         end loop;
 end;
+
+
+DECLARE
+    CURSOR c1 IS
+        SELECT DISTINCT EXTRACT(YEAR FROM Data_egzamin) AS rok
+        FROM egzaminy
+        ORDER BY 1;
+    CURSOR c2 (rokVal NUMBER) IS
+        SELECT MAX(cnt)
+        FROM (SELECT COUNT(DISTINCT Id_student) AS cnt
+              FROM egzaminy
+              WHERE EXTRACT(YEAR FROM Data_egzamin) = rokVal
+              GROUP BY Id_przedmiot);
+    vMaxNumOfStudents number;
+    CURSOR c3 (pMaxNumOfStudents number, rokVal NUMBER) IS
+        SELECT p.Id_przedmiot, p.nazwa_przedmiot, COUNT(DISTINCT e.Id_student) AS liczba_studentow
+        FROM egzaminy e
+                 JOIN przedmioty p ON p.Id_przedmiot = e.Id_przedmiot
+        WHERE EXTRACT(YEAR FROM e.Data_egzamin) = rokVal
+        GROUP BY p.Id_przedmiot, p.nazwa_przedmiot
+        HAVING COUNT(DISTINCT e.Id_student) = pMaxNumOfStudents
+        ORDER BY p.nazwa_przedmiot;
+
+BEGIN
+    FOR vc1 IN c1
+        LOOP
+            OPEN c2(vc1.rok);
+            IF c2%isopen THEN
+                FETCH c2 INTO vMaxNumOfStudents;
+                FOR vc3 IN c3(vMaxNumOfStudents, vc1.rok)
+                    LOOP
+                        DBMS_OUTPUT.PUT_LINE(
+                                    'Rok: ' || vc1.rok ||
+                                    ', Nazwa przedmiotu: ' || vc3.nazwa_przedmiot ||
+                                    ', Liczba studentów: ' || vc3.liczba_studentow
+                        );
+                    END LOOP;
+                CLOSE c2;
+            END IF;
+        END LOOP;
+END;
