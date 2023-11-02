@@ -41,6 +41,52 @@
 --     end loop;
 -- end;
 
+declare
+    nieskonczyl exception;
+    niepodchodzil exception;
+    podrobione exception;
+    vliczba_p number;
+    cursor c1 is SELECT s.id_student, count(e.id_egzamin) as l_zdanych, max(e.data_egzamin) as ostatni
+                 from egzaminy e
+                          right join studenci s on s.id_student = e.id_student
+                 where zdal = 'T'
+                 group by s.id_student;
+    cursor c2(pid_student studenci.id_student%TYPE) is SELECT id_student, imie, nazwisko, nr_ecdl, data_ecdl
+                                                       from studenci
+                                                       where id_student = pid_student;
+begin
+    SELECT count(distinct id_przedmiot) into vliczba_p from egzaminy;
+    for vc1 in c1
+        loop
+            for vc2 in c2(vc1.id_student)
+                loop
+                    begin
+                        if ((vc2.nr_ecdl is NOT NULL or vc2.data_ecdl is not NULL) and vliczba_p > vc1.l_zdanych) then
+                            raise nieskonczyl;
+                        end if;
+                        if (vc1.ostatni is null) then
+                            raise niepodchodzil;
+                        end if;
+                        if (vc1.ostatni < vc2.data_ecdl) then
+                            raise podrobione;
+                        end if;
+                    exception
+                        when niepodchodzil then
+                            dbms_output.put_line('Student ' || vc2.id_student || ' ' || vc2.imie || ' ' ||
+                                                 vc2.nazwisko || '  nie podszedl do zadnego egzaminnu');
+                        when nieskonczyl then
+                            dbms_output.put_line('Student ' || vc2.id_student || ' ' || vc2.imie || ' ' ||
+                                                 vc2.nazwisko || '  nie zaliczyl wszystkich przedmiotow');
+                        when podrobione then
+                            dbms_output.put_line('Student ' || vc2.id_student || ' ' || vc2.imie || ' ' ||
+                                                 vc2.nazwisko || '  podrobil dyplom');
+
+                    end;
+                end loop;
+        end loop;
+end;
+
+
 CREATE OR REPLACE PROCEDURE SprawdzECDL
 AS
     v_egzamin_count   NUMBER;
