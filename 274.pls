@@ -86,7 +86,6 @@ create or replace procedure isECDLValid(
 ) as
     function didPassedAll(pStudentId studenci.id_student%type) return boolean is
         vPassedSubjects number;
-
     begin
         select count(distinct id_przedmiot)
         into vPassedSubjects
