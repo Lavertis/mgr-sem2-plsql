@@ -23,32 +23,29 @@ CREATE TABLE Raport_Roczny
     rok           VARCHAR2(4),
     miesiac       VARCHAR2(15),
     egzaminatorzy TypKolEgzaminator
-) NESTED TABLE egzaminatorzy STORE AS AEgzaminatorzyInfo (NESTED TABLE Egzaminowani_S STORE AS AStudenci);
+) NESTED TABLE egzaminatorzy STORE AS AEgzaminatorzyInfo (NESTED TABLE egzaminowani_s STORE AS AStudenci);
 
 DECLARE
     egzaminatorzy TypKolEgzaminator;
     k             NUMBER := 0 ;
     CURSOR c1 IS SELECT DISTINCT EXTRACT(YEAR FROM data_egzamin) AS year, EXTRACT(MONTH FROM data_egzamin) AS month
                  FROM egzaminy
-                 GROUP BY year, month
+                 GROUP BY EXTRACT(YEAR FROM data_egzamin), EXTRACT(MONTH FROM data_egzamin)
                  ORDER BY 1, 2;
 
---
     FUNCTION getKolEgzaminatorzy(d_year VARCHAR(4), d_month VARCHAR2(15)) RETURN TypKolEgzaminator IS
-    DECLARE
         Col_Egzaminatorzy TypKolEgzaminator := TypKolEgzaminator();
-
         CURSOR c_egzaminatorzy IS SELECT DISTINCT e.id_egzaminator, egz.imie, egz.nazwisko
                                   FROM egzaminy e
                                            INNER JOIN egzaminatorzy egz ON e.id_egzaminator = egz.id_egzaminator
                                   WHERE EXTRACT(YEAR FROM data_egzamin) = d_year
                                     AND EXTRACT(MONTH FROM data_egzamin) = d_month;
-        CURSOR c_studenci(c_id_egzaminator, c_year, c_month) IS SELECT DISTINCT e.id_student, imie, nazwisko
+        CURSOR c_studenci(id_egzaminator NUMBER, year VARCHAR(4), month VARCHAR2(15)) IS SELECT DISTINCT e.id_student, imie, nazwisko
                                                                 FROM studenci s
                                                                          INNER JOIN egzaminy e ON e.id_student = s.id_student
-                                                                WHERE e.id_egzaminator = c_id_egzaminator
-                                                                  AND EXTRACT(YEAR FROM data_egzamin) = c_year
-                                                                  AND EXTRACT(MONTH FROM data_egzamin) = c_month;
+                                                                WHERE e.id_egzaminator = id_egzaminator
+                                                                  AND EXTRACT(YEAR FROM data_egzamin) = year
+                                                                  AND EXTRACT(MONTH FROM data_egzamin) = month;
         Col_Studenci TypKolStudent;
         i            NUMBER := 0 ;
         j            NUMBER := 0;
@@ -63,7 +60,7 @@ DECLARE
 
                 Col_Studenci := TypKolStudent();
 
-                FOR vc_studenci IN c_studenci(c_id_egzaminator, d_year, d_month)
+                FOR vc_studenci IN c_studenci(vc_egzaminatorzy.id_egzaminator, d_year, d_month)
                     LOOP
                         Col_Studenci.EXTEND;
 
@@ -74,7 +71,7 @@ DECLARE
                         j := j + 1;
                     END LOOP;
 
-                Col_Egzaminatorzy.egzaminowani_s(i) := Col_Studenci;
+                Col_Egzaminatorzy(i).egzaminowani_s := Col_Studenci;
 
                 i := i + 1;
             END LOOP;
@@ -88,11 +85,10 @@ BEGIN
     FOR vc_daty IN c1
         LOOP
             egzaminatorzy.EXTEND;
-            egzaminatorzy(k) := getKolEgzaminatorzy(vc_daty.year, vc_daty.year);
+            egzaminatorzy(k) := getKolEgzaminatorzy(vc_daty.year, vc_daty.month);
             k := k + 1;
 
             INSERT INTO Raport_Roczny VALUES (vc_daty.year, vc_daty.month, egzaminatorzy(k));
         END LOOP;
 
 END;
-
