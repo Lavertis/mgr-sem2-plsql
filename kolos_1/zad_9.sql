@@ -27,7 +27,7 @@ begin
             for date_row in daty_egzaminow(przedmiot.ID_PRZEDMIOT)
                 loop
                     byly_egzaminy := true;
-                    DBMS_OUTPUT.put_line('Data egzaminu: ' || date_row.DATA_EGZAMIN);
+                    DBMS_OUTPUT.put_line('Data egzaminu: ' || to_char(date_row.DATA_EGZAMIN, 'dd-mm-yyyy'));
                     for egzaminator in egzaminatorzy_custom(przedmiot.ID_PRZEDMIOT, date_row.DATA_EGZAMIN)
                         loop
                             DBMS_OUTPUT.put_line(

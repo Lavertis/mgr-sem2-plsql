@@ -32,7 +32,7 @@ begin
             for dzien in ostatnie_3_dni_egzaminowania(egzaminator.ID_EGZAMINATOR)
                 loop
                     examFound := true;
-                    dbms_output.put_line('Dzien egzaminowania: ' || dzien.DATA_EGZAMIN);
+                    dbms_output.put_line('Dzien egzaminowania: ' || to_char(dzien.DATA_EGZAMIN, 'dd-mm-yyyy'));
                     for student in studenci_egzaminowani_w_dniu(dzien.DATA_EGZAMIN, egzaminator.ID_EGZAMINATOR)
                         loop
                             dbms_output.put_line(
