@@ -1,5 +1,5 @@
 -- Zadanie 2
--- Dla kazdego egzaminatora wskazac tych studentow, ktorych egzaminowal on w ciagu trzech ostatnich dni swojego
+-- Dla kazdego egzaminatora wskazac tych studentow, ktorych egzaminowal on w ciagu ostatnich trzech dni swojego
 -- egzaminowania. Jezeli dany egzaminator nie przeprowadzil zadnego egzaminu, prosze wyswietlic komunikat "Brak
 -- egzaminow". W odpowiedzi nalezy umiescic dane identyfikujace egzaminatora (identyfikator, nazwisko, imie),
 -- dzien egzaminowania (w formacie DD-MM-YYYY) i egzaminowanych studentow (identyfikator, nazwisko, imie).

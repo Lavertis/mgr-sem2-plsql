@@ -9,6 +9,7 @@
 
 create or replace type TypOsrodekEgzaminatora as object
 (
+    id_osrodek       number,
     nazwa_osrodek    varchar2(50),
     liczba_egzaminow number
 );
@@ -44,6 +45,7 @@ begin
                       and ID_OSRODEK = osrodek.ID_OSRODEK;
                     temp_osrodki_egzaminatora.extend;
                     temp_osrodki_egzaminatora(temp_osrodki_egzaminatora.count) := TypOsrodekEgzaminatora(
+                            osrodek.ID_OSRODEK,
                             osrodek.NAZWA_OSRODEK,
                             exam_count);
                 end loop;
@@ -62,7 +64,10 @@ begin
             dbms_output.put_line('OSRODKI: ');
             for osrodek in (select * from table (analityka_row.OSRODKI))
                 loop
-                    dbms_output.put_line(osrodek.NAZWA_OSRODEK || ': ' || osrodek.LICZBA_EGZAMINOW);
+                    dbms_output.put_line(
+                            'ID_OSRODEK: ' || osrodek.ID_OSRODEK || ' NAZWA_OSRODEK: ' || osrodek.NAZWA_OSRODEK ||
+                            ' LICZBA_EGZAMINOW: ' || osrodek.LICZBA_EGZAMINOW
+                    );
                 end loop;
             dbms_output.put_line(chr(10));
         end loop;

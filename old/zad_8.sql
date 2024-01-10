@@ -57,3 +57,63 @@ begin
             dbms_output.put_line(chr(10));
         end loop;
 end;
+
+
+-- ver 2
+CREATE OR REPLACE TYPE TypEgzaminyInfo AS OBJECT
+(
+    rok              NUMBER,
+    miesiac          NUMBER,
+    liczba_egzaminow NUMBER
+);
+CREATE OR REPLACE TYPE TypEgzaminyInfoTab AS TABLE OF TypEgzaminyInfo;
+
+CREATE TABLE PrzedmiotyAnaliza
+(
+    nazwa_przedmiotu VARCHAR2(50),
+    egzaminy_info    TypEgzaminyInfoTab
+) NESTED TABLE egzaminy_info STORE AS egzaminy_info_tab;
+
+DECLARE
+    CURSOR c1 IS
+        SELECT NAZWA_PRZEDMIOT,
+               EXTRACT(YEAR FROM DATA_EGZAMIN)  AS rok,
+               EXTRACT(MONTH FROM DATA_EGZAMIN) AS miesiac,
+               COUNT(*)                         AS liczba_egzaminow
+        FROM Przedmioty p
+                 JOIN Egzaminy e ON p.ID_PRZEDMIOT = e.ID_PRZEDMIOT
+        GROUP BY NAZWA_PRZEDMIOT, EXTRACT(YEAR FROM DATA_EGZAMIN), EXTRACT(MONTH FROM DATA_EGZAMIN)
+        ORDER BY NAZWA_PRZEDMIOT, EXTRACT(YEAR FROM DATA_EGZAMIN), EXTRACT(MONTH FROM DATA_EGZAMIN);
+    v_nazwa_przedmiotu PrzedmiotyAnaliza.nazwa_przedmiotu%TYPE;
+    v_egzaminy_info    TypEgzaminyInfoTab := TypEgzaminyInfoTab();
+BEGIN
+    FOR rec IN c1
+        LOOP
+            IF v_nazwa_przedmiotu IS NULL
+            THEN
+                v_nazwa_przedmiotu := rec.NAZWA_PRZEDMIOT;
+            END IF;
+            IF v_nazwa_przedmiotu != rec.NAZWA_PRZEDMIOT
+            THEN
+                INSERT INTO PrzedmiotyAnaliza VALUES (v_nazwa_przedmiotu, v_egzaminy_info);
+                v_nazwa_przedmiotu := rec.NAZWA_PRZEDMIOT;
+                v_egzaminy_info := TypEgzaminyInfoTab();
+            END IF;
+            v_egzaminy_info.extend;
+            v_egzaminy_info(v_egzaminy_info.last) := TypEgzaminyInfo(rec.rok, rec.miesiac, rec.liczba_egzaminow);
+        END LOOP;
+END;
+
+BEGIN
+    FOR rec IN (SELECT * FROM PrzedmiotyAnaliza)
+        LOOP
+            DBMS_OUTPUT.PUT_LINE(rec.nazwa_przedmiotu);
+            FOR i IN 1..rec.egzaminy_info.count
+                LOOP
+                    DBMS_OUTPUT.PUT_LINE(
+                            'Rok: ' || rec.egzaminy_info(i).rok || ' Miesiac: ' || rec.egzaminy_info(i).miesiac ||
+                            ' Liczba egzaminow: ' || rec.egzaminy_info(i).liczba_egzaminow);
+                END LOOP;
+            dbms_output.put_line(CHR(10));
+        END LOOP;
+END;

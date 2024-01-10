@@ -9,19 +9,6 @@ declare
     cursor lata_egzaminow is select distinct extract(year from DATA_EGZAMIN) as rok
                              from EGZAMINY order by rok;
 
---     cursor egzaminatorzy_egzaminujacy_w_danym_roku(rok number) is
---         select distinct EGZAMINATORZY.ID_EGZAMINATOR, IMIE, NAZWISKO
---         from EGZAMINY
---                  JOIN EGZAMINATORZY ON EGZAMINY.ID_EGZAMINATOR = EGZAMINATORZY.ID_EGZAMINATOR
---         where extract(year from DATA_EGZAMIN) = rok
---         order by EGZAMINATORZY.ID_EGZAMINATOR;
---     cursor egzaminatorzy_nie_egzaminujacy_w_danym_roku(rok number) is
---         select distinct ID_EGZAMINATOR, IMIE, NAZWISKO
---         from EGZAMINATORZY
---         where ID_EGZAMINATOR not in (select distinct ID_EGZAMINATOR
---                                      from EGZAMINY
---                                      where extract(year from DATA_EGZAMIN) = rok);
-
     function czy_egzaminator_egzaminowal_w_roku(id_egzaminatora number, rok number) return boolean is
         cursor egzaminy_egzaminatora is select distinct ID_EGZAMINATOR
                                         from EGZAMINY
