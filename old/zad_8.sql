@@ -40,8 +40,8 @@ begin
                             date_row.rok,
                             date_row.month,
                             date_row.liczba_egzaminow);
-                    insert into Przedmioty_Analiza values (przedmiot.NAZWA_PRZEDMIOT, temp_egzaminy_info);
                 end loop;
+            insert into Przedmioty_Analiza values (przedmiot.NAZWA_PRZEDMIOT, temp_egzaminy_info);
         end loop;
     for przedmiot_analiza in (select * from PRZEDMIOTY_ANALIZA)
         loop
