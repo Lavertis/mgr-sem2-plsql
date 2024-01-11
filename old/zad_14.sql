@@ -10,9 +10,8 @@ declare
         select distinct extract(year from DATA_EGZAMIN) as rok
         from EGZAMINY
         order by rok;
-    punkty number := 0;
     cursor studenci_z_najwieksza_liczba_zdanych_egzaminow_w_roku(rok number) is
-        select S.ID_STUDENT, IMIE, NAZWISKO, count(ID_EGZAMIN) as liczba_egzaminow
+        select S.ID_STUDENT, IMIE, NAZWISKO, count(ID_EGZAMIN) as liczba_egzaminow, sum(PUNKTY) as suma_punktow
         from studenci S
                  join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT
         where zdal = 'T'
@@ -26,32 +25,17 @@ declare
                 group by ID_STUDENT
                 order by liczba_egzaminow desc fetch first row only);
 
-    function suma_punktow_studenta_w_roku(id_studenta number, rok number) return number is
-        suma_punktow number := 0;
-    begin
-        select sum(PUNKTY)
-        into suma_punktow
-        from EGZAMINY
-        where ID_STUDENT = id_studenta
-          and zdal = 'T'
-          and extract(year from DATA_EGZAMIN) = rok;
-        return suma_punktow;
-    exception
-        when NO_DATA_FOUND then
-            return 0;
-    end;
 begin
     for rok_data in lata_egzaminow
         loop
             DBMS_OUTPUT.PUT_LINE('Rok: ' || rok_data.rok);
             for student in studenci_z_najwieksza_liczba_zdanych_egzaminow_w_roku(rok_data.rok)
                 loop
-                    punkty := suma_punktow_studenta_w_roku(student.ID_STUDENT, rok_data.rok);
                     DBMS_OUTPUT.PUT_LINE(
                             'Student: ' || student.ID_STUDENT || ' ' || student.IMIE || ' ' || student.NAZWISKO ||
                             ' ' ||
                             'Liczba egzaminow: ' || student.liczba_egzaminow || ' ' ||
-                            'Suma punktow: ' || punkty
+                            'Suma punktow: ' || student.suma_punktow
                     );
                 end loop;
         end loop;
