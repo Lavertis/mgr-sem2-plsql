@@ -7,17 +7,16 @@
 -- ktory egzaminowal najwiecej osob). Po zainicjowaniu kolekcji, wyświetlic wartosci znajdujace sie w poszczegolnych
 -- jej elementach.
 
-create or replace type Typ_NT_Egzaminator as object
-(
-    id_egzaminator   number,
-    imie             varchar2(15),
-    nazwisko         varchar2(25),
-    liczba_studentow number
-);
-
-create or replace type Typ_NT_Egzaminatorzy_Tab as table of Typ_NT_Egzaminator;
 
 declare
+    type Typ_NT_Egzaminator is record (
+        id_egzaminator number,
+        imie varchar2(15),
+        nazwisko varchar2(25),
+        liczba_studentow number
+    );
+    type Typ_NT_Egzaminatorzy_Tab is table of Typ_NT_Egzaminator;
+
     v_nt_egzaminatorzy Typ_NT_Egzaminatorzy_Tab := Typ_NT_Egzaminatorzy_Tab();
     cursor e1 is
         select EGZAMINY.ID_EGZAMINATOR, IMIE, NAZWISKO, COUNT(ID_STUDENT) as liczba_studentow

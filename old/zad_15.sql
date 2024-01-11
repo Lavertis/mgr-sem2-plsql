@@ -6,14 +6,17 @@
 
 declare
     NieEgzaminowalException exception;
-    cursor lata_egzaminow is select distinct extract(year from DATA_EGZAMIN) as rok
-                             from EGZAMINY order by rok;
+    cursor lata_egzaminow is
+        select distinct extract(year from DATA_EGZAMIN) as rok
+        from EGZAMINY
+        order by rok;
 
     function czy_egzaminator_egzaminowal_w_roku(id_egzaminatora number, rok number) return boolean is
-        cursor egzaminy_egzaminatora is select distinct ID_EGZAMINATOR
-                                        from EGZAMINY
-                                        where extract(year from DATA_EGZAMIN) = rok
-                                          and ID_EGZAMINATOR = id_egzaminatora;
+        cursor egzaminy_egzaminatora is
+            select distinct ID_EGZAMINATOR
+            from EGZAMINY
+            where extract(year from DATA_EGZAMIN) = rok
+              and ID_EGZAMINATOR = id_egzaminatora;
     begin
         for s in egzaminy_egzaminatora
             loop

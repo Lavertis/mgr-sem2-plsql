@@ -5,17 +5,18 @@
 -- kolekcji zawiera studenta, który miał najwięcej egzaminów). Po zainicjowaniu kolekcji, wyświetlić wartości
 -- znajdujące się w poszczególnych jej elementach.
 
-CREATE OR REPLACE TYPE Typ_NT_Student IS OBJECT
-(
-    id_student NUMBER,
-    imie       VARCHAR2(15),
-    nazwisko   VARCHAR2(25),
-    punkty     NUMBER,
-    egzaminy   NUMBER
-);
-CREATE OR REPLACE TYPE Typ_NT_Student_Tab IS TABLE OF Typ_NT_Student;
 
 DECLARE
+    TYPE Typ_NT_Student IS record
+    (
+        id_student NUMBER,
+        imie       VARCHAR2(15),
+        nazwisko   VARCHAR2(25),
+        punkty     NUMBER,
+        egzaminy   NUMBER
+    );
+    TYPE Typ_NT_Student_Tab IS TABLE OF Typ_NT_Student;
+
     NT_Studenci Typ_NT_Student_Tab := Typ_NT_Student_Tab();
     CURSOR c1 IS SELECT s.id_student, imie, nazwisko, COUNT(id_egzamin) AS egzaminy, SUM(punkty) AS punkty
                  FROM studenci s

@@ -6,24 +6,25 @@
 
 
 declare
-    cursor lata_egzaminow is select distinct extract(year from DATA_EGZAMIN) as rok
-                             from EGZAMINY
-                             order by rok;
+    cursor lata_egzaminow is
+        select distinct extract(year from DATA_EGZAMIN) as rok
+        from EGZAMINY
+        order by rok;
     punkty number := 0;
-    cursor studenci_z_najwieksza_liczba_zdanych_egzaminow_w_roku(rok number)
-        is select S.ID_STUDENT, IMIE, NAZWISKO, count(ID_EGZAMIN) as liczba_egzaminow
-           from studenci S
-                    join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT
-           where zdal = 'T'
-             and extract(year from DATA_EGZAMIN) = rok
-           group by S.ID_STUDENT, IMIE, NAZWISKO
-           having count(ID_EGZAMIN) =
-                  (select count(ID_EGZAMIN) as liczba_egzaminow
-                   from egzaminy
-                   where zdal = 'T'
-                     and extract(year from DATA_EGZAMIN) = rok
-                   group by ID_STUDENT
-                   order by liczba_egzaminow desc fetch first row only);
+    cursor studenci_z_najwieksza_liczba_zdanych_egzaminow_w_roku(rok number) is
+        select S.ID_STUDENT, IMIE, NAZWISKO, count(ID_EGZAMIN) as liczba_egzaminow
+        from studenci S
+                 join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT
+        where zdal = 'T'
+          and extract(year from DATA_EGZAMIN) = rok
+        group by S.ID_STUDENT, IMIE, NAZWISKO
+        having count(ID_EGZAMIN) =
+               (select count(ID_EGZAMIN) as liczba_egzaminow
+                from egzaminy
+                where zdal = 'T'
+                  and extract(year from DATA_EGZAMIN) = rok
+                group by ID_STUDENT
+                order by liczba_egzaminow desc fetch first row only);
 
     function suma_punktow_studenta_w_roku(id_studenta number, rok number) return number is
         suma_punktow number := 0;

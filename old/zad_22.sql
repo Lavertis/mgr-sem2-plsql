@@ -72,14 +72,18 @@ END;
 
 BEGIN
     FOR r_egzaminator IN (SELECT * FROM EgzaminatorzyAnaliza)
-    LOOP
-        DBMS_OUTPUT.PUT_LINE(r_egzaminator.id_egzaminatora || ' ' || r_egzaminator.nazwisko || ' ' || r_egzaminator.imie);
-        FOR r_egzamin IN (SELECT * FROM TABLE(r_egzaminator.egzaminy))
         LOOP
             DBMS_OUTPUT.PUT_LINE(
-                'Rok: ' || r_egzamin.rok || ' Miesiac: ' || r_egzamin.miesiac || ' Liczba studentow: ' ||
-                r_egzamin.liczba_studentow);
+                    r_egzaminator.id_egzaminatora || ' ' || r_egzaminator.nazwisko || ' ' || r_egzaminator.imie
+            );
+            FOR r_egzamin IN (SELECT * FROM TABLE (r_egzaminator.egzaminy))
+                LOOP
+                    DBMS_OUTPUT.PUT_LINE(
+                            'Rok: ' || r_egzamin.rok ||
+                            ' Miesiac: ' || r_egzamin.miesiac ||
+                            ' Liczba studentow: ' || r_egzamin.liczba_studentow
+                    );
+                END LOOP;
+            DBMS_OUTPUT.PUT_LINE(chr(10));
         END LOOP;
-        DBMS_OUTPUT.PUT_LINE(chr(10));
-    END LOOP;
 END;

@@ -7,17 +7,19 @@
 -- wartosci znajdujace sie w poszczegolnych jej elementach.
 
 declare
-    type NT_Osrodki_Data is record(
+    type NT_Osrodki_Data is record
+    (
         data_egzaminu date,
         id_osrodka    number,
         nazwa_osrodka varchar2(50)
     );
     type NT_Osrodki is table of NT_Osrodki_Data;
-    cursor o1 is select O.ID_OSRODEK, NAZWA_OSRODEK, DATA_EGZAMIN
-                 from OSRODKI O
-                          join EGZAMINY E on O.ID_OSRODEK = E.ID_OSRODEK
-                 where DATA_EGZAMIN in
-                       (select distinct DATA_EGZAMIN from EGZAMINY order by DATA_EGZAMIN desc fetch first 3 rows only);
+    cursor o1 is
+        select O.ID_OSRODEK, NAZWA_OSRODEK, DATA_EGZAMIN
+        from OSRODKI O
+                 join EGZAMINY E on O.ID_OSRODEK = E.ID_OSRODEK
+        where DATA_EGZAMIN in
+              (select distinct DATA_EGZAMIN from EGZAMINY order by DATA_EGZAMIN desc fetch first 3 rows only);
     v_nt_osrodki NT_Osrodki := NT_Osrodki();
     i number := 1;
 begin

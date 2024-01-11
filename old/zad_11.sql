@@ -23,11 +23,13 @@ create table Stud_Exam_Dates
 ) nested table przedmioty_egzaminy store as przedmioty_egzaminy_tab;
 
 declare
-    cursor studenci is select *
-                       from STUDENCI;
-    cursor przedmioty is select *
-                         from PRZEDMIOTY;
-    data_egzaminu            date;
+    cursor studenci is
+        select *
+        from STUDENCI;
+    cursor przedmioty is
+        select *
+        from PRZEDMIOTY;
+    data_egzaminu date;
     temp_przedmioty_egzaminy Przedmiot_Egzamin_Tab;
 
     function data_zdania_egzaminu_przez_studenta_z_przedmiotu(id_przedmiotu number, id_studenta varchar2) return date is
@@ -72,7 +74,9 @@ begin
             DBMS_OUTPUT.PUT_LINE('Student: ' || stud_exams.IMIE || ' ' || stud_exams.NAZWISKO);
             for exam_date in (select * from table (stud_exams.przedmioty_egzaminy))
                 loop
-                    DBMS_OUTPUT.PUT_LINE('Przedmiot: ' || exam_date.nazwa_przedmiotu || ' Data zdania: ' || exam_date.data_zdanego_egzaminu);
+                    DBMS_OUTPUT.PUT_LINE(
+                            'Przedmiot: ' || exam_date.nazwa_przedmiotu ||
+                            ' Data zdania: ' || exam_date.data_zdanego_egzaminu);
                 end loop;
         end loop;
 end;

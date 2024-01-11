@@ -7,9 +7,10 @@
 -- jego identyfikator, nazwisko i imie. Zadanie nalezy wykonac z uzyciem kursora.
 
 declare
-    cursor egzaminatorzy_muryjas is select *
-                                    from EGZAMINATORZY
-                                    where NAZWISKO = 'Muryjas';
+    cursor egzaminatorzy_muryjas is
+        select *
+        from EGZAMINATORZY
+        where NAZWISKO = 'Muryjas';
     cursor studenci_zdajacy_u_egzaminatora_danego_dnia(id_egzaminatora number, dzien date) is
         select distinct S.ID_STUDENT, IMIE, NAZWISKO
         FROM STUDENCI S

@@ -4,16 +4,11 @@
 -- W rozwiazaniu zadania nalezy wykorzystac podprogram (funkcja lub procedura) PL/SQL, ktory umozliwi wyznaczenie
 -- daty ostatniego dnia egzaminowania z danego przedmiotu.
 
-create or replace function ostatni_dzien_egzaminowania(id_przedmiotu number) return date is
-    ostatni_dzien date;
-begin
-    select max(DATA_EGZAMIN) into ostatni_dzien from EGZAMINY where ID_PRZEDMIOT = id_przedmiotu;
-    return ostatni_dzien;
-end;
 
 declare
-    cursor przedmioty is select ID_PRZEDMIOT, NAZWA_PRZEDMIOT
-                         from PRZEDMIOTY;
+    cursor przedmioty is
+        select ID_PRZEDMIOT, NAZWA_PRZEDMIOT
+        from PRZEDMIOTY;
     cursor studenci_z_ostatniego_dnia_egzaminowania(id_przedmiot number, ostatni_dzien date) is
         select S.ID_STUDENT, IMIE, NAZWISKO
         from STUDENCI S
@@ -21,6 +16,13 @@ declare
         where E.DATA_EGZAMIN = ostatni_dzien
         order by S.ID_STUDENT;
     ostatni_dzien date;
+
+    function ostatni_dzien_egzaminowania(id_przedmiotu number) return date is
+        ostatni_dzien date;
+    begin
+        select max(DATA_EGZAMIN) into ostatni_dzien from EGZAMINY where ID_PRZEDMIOT = id_przedmiotu;
+        return ostatni_dzien;
+    end;
 begin
     for przedmiot in przedmioty
         loop

@@ -4,47 +4,41 @@
 -- w egzaminie przeprowadzonych w danych osrodku i w danym roku. Do okreslenia roku wykorzystac funkcje EXTRACT.
 
 
-create or replace function czy_student_zdawal_w_osrodku_w_roku(
-    id_osrodka in varchar2,
-    id_studenta in varchar2,
-    rok in number
-) return boolean is
-    cursor c1 is select *
-                 from EGZAMINY E
-                 where E.ID_STUDENT = id_studenta
-                   and E.ID_OSRODEK = id_osrodka
-                   and extract(year from E.DATA_EGZAMIN) = rok;
---     vEgzamin EGZAMINY%rowtype;
-begin
-    --     open c1;
---     fetch c1 into vEgzamin;
---     if c1%found then
---         return true;
---     else
---         return false;
---     end if;
-    for i in c1
-        loop
-            return true;
-        end loop;
-    return false;
-end;
-
 declare
-    cursor osrodki is select *
-                      from OSRODKI;
-    cursor studenci_zdajacy_w_osrodku(id_osrodek in varchar2)
-        is select distinct E.ID_STUDENT, IMIE, NAZWISKO
-           from EGZAMINY E
-                    join STUDENCI S on E.ID_STUDENT = S.ID_STUDENT
-           WHERE E.ID_OSRODEK = id_osrodek
-           order by E.ID_STUDENT;
-    cursor lata_egzaminow_w_osrodku(id_osrodek in varchar2)
-        is select distinct extract(year from DATA_EGZAMIN) as rok
-           from EGZAMINY E
-           where E.ID_OSRODEK = id_osrodek;
+    cursor osrodki is
+        select *
+        from OSRODKI;
+    cursor studenci_zdajacy_w_osrodku(id_osrodka in varchar2) is
+        select distinct E.ID_STUDENT, IMIE, NAZWISKO
+        from EGZAMINY E
+                 join STUDENCI S on E.ID_STUDENT = S.ID_STUDENT
+        WHERE E.ID_OSRODEK = id_osrodka
+        order by E.ID_STUDENT;
+    cursor lata_egzaminow_w_osrodku(id_osrodka in varchar2) is
+        select distinct extract(year from DATA_EGZAMIN) as rok
+        from EGZAMINY E
+        where E.ID_OSRODEK = id_osrodka;
     lata_zdawania int     := 0;
     czy_zdawal    boolean := false;
+
+    function czy_student_zdawal_w_osrodku_w_roku(
+        id_osrodka in varchar2,
+        id_studenta in varchar2,
+        rok in number
+    ) return boolean is
+        cursor c1 is
+            select *
+            from EGZAMINY E
+            where E.ID_STUDENT = id_studenta
+              and E.ID_OSRODEK = id_osrodka
+              and extract(year from E.DATA_EGZAMIN) = rok;
+    begin
+        for i in c1
+            loop
+                return true;
+            end loop;
+        return false;
+    end;
 begin
     for osrodek in osrodki
         loop

@@ -24,13 +24,15 @@ create table Analityka
 ) nested table osrodki store as OsrodekEgzaminatoraTab;
 
 declare
-    cursor egzaminatorzy is select *
-                            from EGZAMINATORZY
-                            order by ID_EGZAMINATOR;
-    cursor osrodki is select *
-                      from osrodki
-                      order by ID_OSRODEK;
-    exam_count                number;
+    cursor egzaminatorzy is
+        select *
+        from EGZAMINATORZY
+        order by ID_EGZAMINATOR;
+    cursor osrodki is
+        select *
+        from osrodki
+        order by ID_OSRODEK;
+    exam_count number;
     temp_osrodki_egzaminatora TypOsrodekEgzaminatoraTab;
 begin
     for egzaminator in egzaminatorzy

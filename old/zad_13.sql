@@ -7,9 +7,10 @@
 declare
     too_many_exams exception;
     exam_count number := 0;
-    cursor lata_egzaminow_w_osrodku(id_osrodka number) is select extract(year from DATA_EGZAMIN) as rok
-                                                          from EGZAMINY
-                                                          where ID_OSRODEK = id_osrodka;
+    cursor lata_egzaminow_w_osrodku(id_osrodka number) is
+        select extract(year from DATA_EGZAMIN) as rok
+        from EGZAMINY
+        where ID_OSRODEK = id_osrodka;
 
     function egzaminy_egzaminatora_w_osrodku_w_roku(id_egzaminatora number, id_osrodka number, rok number) return number is
         exams number := 0;

@@ -5,16 +5,17 @@
 
 declare
     ZdawalWiecejNiz10 exception;
-    cursor s1 is select S.ID_STUDENT,
-                        NAZWISKO,
-                        IMIE,
-                        extract(year from DATA_EGZAMIN) as rok,
-                        count(ID_EGZAMIN)               as liczba_egzaminow
-                 from STUDENCI S
-                          join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT
-                          join LAB.PRZEDMIOTY P on P.ID_PRZEDMIOT = E.ID_PRZEDMIOT
-                 where NAZWA_PRZEDMIOT = 'Bazy danych'
-                 group by S.ID_STUDENT, NAZWISKO, IMIE, extract(year from DATA_EGZAMIN);
+    cursor s1 is
+        select S.ID_STUDENT,
+               NAZWISKO,
+               IMIE,
+               extract(year from DATA_EGZAMIN) as rok,
+               count(ID_EGZAMIN)               as liczba_egzaminow
+        from STUDENCI S
+                 join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT
+                 join LAB.PRZEDMIOTY P on P.ID_PRZEDMIOT = E.ID_PRZEDMIOT
+        where NAZWA_PRZEDMIOT = 'Bazy danych'
+        group by S.ID_STUDENT, NAZWISKO, IMIE, extract(year from DATA_EGZAMIN);
 begin
     for student in s1
         loop

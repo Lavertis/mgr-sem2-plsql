@@ -6,17 +6,17 @@
 -- kolekcji zawiera studenta, ktory zdawal najwczesniej egzamin). Po zainicjowaniu kolekcji, wyswietlic wartosci
 -- znajdujace sie w poszczegolnych jej elementach.
 
-create or replace type Typ_NT_Student is object
-(
-    id_student               varchar2(7),
-    imie                     varchar2(15),
-    nazwisko                 varchar2(25),
-    data_ostatniego_egzaminu date
-);
-
-create or replace type Typ_NT_Student_Tab as table of Typ_NT_Student
 
 declare
+    type Typ_NT_Student is record
+    (
+        id_student               varchar2(7),
+        imie                     varchar2(15),
+        nazwisko                 varchar2(25),
+        data_ostatniego_egzaminu date
+    );
+    type Typ_NT_Student_Tab is table of Typ_NT_Student;
+
     cursor s1 is select S.ID_STUDENT, IMIE, NAZWISKO, MAX(DATA_EGZAMIN) as data_ostatniego_egzaminu
                  from STUDENCI S
                           join LAB.EGZAMINY E on S.ID_STUDENT = E.ID_STUDENT

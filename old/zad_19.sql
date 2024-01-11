@@ -5,8 +5,10 @@
 
 declare
     NieZdawalBazDanychException exception ;
-    cursor s1 is select ID_STUDENT, IMIE, NAZWISKO
-                 FROM STUDENCI;
+    cursor s1 is
+        select ID_STUDENT, IMIE, NAZWISKO
+        FROM STUDENCI;
+
     function czy_student_zdawal_bazy_danych(id_studenta varchar2) return boolean is
         cursor egzaminy_studenta_z_baz_danych is
             select ID_EGZAMIN

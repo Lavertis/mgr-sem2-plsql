@@ -6,17 +6,16 @@
 -- znalezli sie studenci, ktorzy zdobyli najwieksza liczbe punktow. Po zainicjowaniu kolekcji, wyświetlic wartosci
 -- znajdujace sie w poszczegolnych jej elementach.
 
-create or replace type Typ_NT_Student as object
-(
-    id_student     number,
-    imie           varchar2(15),
-    nazwisko       varchar2(25),
-    zdobyte_punkty number
-);
-
-create or replace type Typ_NT_Studenci_Tab as table of Typ_NT_Student;
 
 declare
+    type Typ_NT_Student is record(
+        id_student     number,
+        imie           varchar2(15),
+        nazwisko       varchar2(25),
+        zdobyte_punkty number
+    );
+    type Typ_NT_Studenci_Tab is table of Typ_NT_Student;
+
     cursor s1 is
         select S.ID_STUDENT, IMIE, NAZWISKO, NVL(SUM(PUNKTY), 0) as suma_punktow
         from STUDENCI S
