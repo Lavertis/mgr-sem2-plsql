@@ -33,6 +33,7 @@ begin
                              from EGZAMINY E
                              where ID_PRZEDMIOT = przedmiot.ID_PRZEDMIOT
                              group by extract(year from DATA_EGZAMIN), extract(month from DATA_EGZAMIN)
+                             order by extract(year from DATA_EGZAMIN), extract(month from DATA_EGZAMIN)
                 )
                 loop
                     temp_egzaminy_info.extend;
@@ -46,7 +47,7 @@ begin
     for przedmiot_analiza in (select * from PRZEDMIOTY_ANALIZA)
         loop
             DBMS_OUTPUT.PUT_LINE('Przedmiot: ' || przedmiot_analiza.NAZWA_PRZEDMIOT);
-            for egzamin_info in (select * from table (przedmiot_analiza.EGZAMINY_INFO) order by rok, miesiac)
+            for egzamin_info in (select * from table (przedmiot_analiza.EGZAMINY_INFO))
                 loop
                     DBMS_OUTPUT.PUT_LINE(
                             'Rok: ' || egzamin_info.rok ||
