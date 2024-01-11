@@ -35,19 +35,21 @@ declare
                 group by O.ID_OSRODEK, NAZWA_OSRODEK, extract(year from E.DATA_EGZAMIN),
                          extract(month from E.DATA_EGZAMIN)
                 order by O.ID_OSRODEK, extract(year from E.DATA_EGZAMIN), extract(month from E.DATA_EGZAMIN);
-    v_dane       TypOsrodekInfoTab := TypOsrodekInfoTab();
-    v_id_osrodka number;
+    v_dane          TypOsrodekInfoTab := TypOsrodekInfoTab();
+    v_id_osrodka    number;
+    v_nazwa_osrodka varchar2(50);
 begin
     for o_rec in o
         loop
             if v_id_osrodka is null
             then
                 v_id_osrodka := o_rec.ID_OSRODEK;
+                v_nazwa_osrodka := o_rec.NAZWA_OSRODEK;
             end if;
             if v_id_osrodka <> o_rec.ID_OSRODEK
             then
                 insert into OsrodkiAnaliza
-                values (v_id_osrodka, o_rec.NAZWA_OSRODEK, v_dane);
+                values (v_id_osrodka, v_nazwa_osrodka, v_dane);
                 v_dane := TypOsrodekInfoTab();
                 v_id_osrodka := o_rec.ID_OSRODEK;
             end if;
@@ -58,18 +60,21 @@ begin
                     o_rec.liczba_egzaminow,
                     o_rec.liczba_osob_egzaminowanych);
         end loop;
+    insert into OsrodkiAnaliza
+    values (v_id_osrodka, v_nazwa_osrodka, v_dane);
 end;
 
 begin
     for o_rec in (select * from OsrodkiAnaliza)
         loop
             dbms_output.put_line(o_rec.id_osrodka || ' ' || o_rec.nazwa_osrodka);
-            for dane_rec in (select * from table(o_rec.dane))
+            for dane_rec in (select * from table (o_rec.dane))
                 loop
                     dbms_output.put_line(
-                        dane_rec.rok || '-' || LPAD(dane_rec.miesiac, 2, '0') ||
-                        ', egzaminy: ' || dane_rec.liczba_egzaminow ||
-                        ', osoby: ' || dane_rec.liczba_osob_egzaminowanych);
+                            dane_rec.rok || '-' || LPAD(dane_rec.miesiac, 2, '0') ||
+                            ', egzaminy: ' || dane_rec.liczba_egzaminow ||
+                            ', osoby: ' || dane_rec.liczba_osob_egzaminowanych);
                 end loop;
+            dbms_output.put_line(chr(10));
         end loop;
 end;
