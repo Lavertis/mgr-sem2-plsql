@@ -7,10 +7,8 @@
 
 declare
     cursor s1 is
-        select S.ID_STUDENT, IMIE, NAZWISKO, count(E.ID_EGZAMIN) as liczba_egzaminow
-        FROM STUDENCI S
-                 LEFT JOIN EGZAMINY E on E.ID_STUDENT = S.ID_STUDENT
-        group by S.ID_STUDENT, NAZWISKO, IMIE
+        select ID_STUDENT, IMIE, NAZWISKO
+        FROM STUDENCI
         ORDER BY NAZWISKO, IMIE;
     liczba_egzaminow number;
 
