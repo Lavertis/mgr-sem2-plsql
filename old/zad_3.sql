@@ -5,60 +5,46 @@
 
 
 declare
-    cursor osrodki is
-        select *
-        from OSRODKI;
-    cursor studenci_zdajacy_w_osrodku(id_osrodka in varchar2) is
-        select distinct E.ID_STUDENT, IMIE, NAZWISKO
-        from EGZAMINY E
-                 join STUDENCI S on E.ID_STUDENT = S.ID_STUDENT
-        WHERE E.ID_OSRODEK = id_osrodka
-        order by E.ID_STUDENT;
-    cursor lata_egzaminow_w_osrodku(id_osrodka in varchar2) is
-        select distinct extract(year from DATA_EGZAMIN) as rok
-        from EGZAMINY E
-        where E.ID_OSRODEK = id_osrodka;
-    lata_zdawania int     := 0;
-    czy_zdawal    boolean := false;
+    cursor c_osrodki is select ID_OSRODEK, NAZWA_OSRODEK
+                        from OSRODKI;
+    cursor c_studenci is select ID_STUDENT, IMIE, NAZWISKO
+                         from STUDENCI;
+    cursor lata_egzaminow_w_osrodku(id_osrodka number) is
+        select distinct extract(year from DATA_EGZAMIN) as ROK
+        from EGZAMINY
+        where ID_OSRODEK = id_osrodka
+        order by ROK;
 
-    function czy_student_zdawal_w_osrodku_w_roku(
-        id_osrodka in varchar2,
-        id_studenta in varchar2,
-        rok in number
-    ) return boolean is
-        cursor c1 is
-            select *
-            from EGZAMINY E
-            where E.ID_STUDENT = id_studenta
-              and E.ID_OSRODEK = id_osrodka
-              and extract(year from E.DATA_EGZAMIN) = rok;
+    function czy_student_zdawal_w_osrodku_w_roku(id_studenta varchar2, id_osrodka number, rok number) return boolean is
+        cursor egzaminy_studenta is
+            select ID_EGZAMIN
+            from EGZAMINY
+            where ID_STUDENT = id_studenta
+              and ID_OSRODEK = id_osrodka
+              and extract(year from DATA_EGZAMIN) = rok
+                fetch first 1 row only;
     begin
-        for i in c1
+        for egzamin in egzaminy_studenta
             loop
                 return true;
             end loop;
         return false;
     end;
 begin
-    for osrodek in osrodki
+    for osrodek in c_osrodki
         loop
-            dbms_output.put_line('Osrodek: ' || osrodek.ID_OSRODEK || ' ' || osrodek.NAZWA_OSRODEK);
-            for student in studenci_zdajacy_w_osrodku(osrodek.ID_OSRODEK)
+            dbms_output.put_line('Osrodek: ' || osrodek.NAZWA_OSRODEK);
+            for rok in lata_egzaminow_w_osrodku(osrodek.ID_OSRODEK)
                 loop
-                    lata_zdawania := 0;
-                    for data in lata_egzaminow_w_osrodku(osrodek.ID_OSRODEK)
+                    dbms_output.put_line('Rok: ' || rok.ROK);
+                    for student in c_studenci
                         loop
-                            czy_zdawal := czy_student_zdawal_w_osrodku_w_roku(osrodek.ID_OSRODEK, student.ID_STUDENT,
-                                                                              data.rok);
-                            if czy_zdawal then
-                                lata_zdawania := lata_zdawania + 1;
+                            if czy_student_zdawal_w_osrodku_w_roku(student.ID_STUDENT, osrodek.ID_OSRODEK, rok.ROK)
+                            then
+                                dbms_output.put_line('    ' || student.IMIE || ' ' || student.NAZWISKO);
                             end if;
                         end loop;
-                    if lata_zdawania > 1 then
-                        dbms_output.put_line(student.ID_STUDENT || ' ' || student.IMIE || ' ' || student.NAZWISKO ||
-                                             ' zdawal w ' || lata_zdawania || ' latach');
-                    end if;
                 end loop;
-            DBMS_OUTPUT.put_line(chr(10));
+            dbms_output.put_line(chr(10));
         end loop;
 end;
