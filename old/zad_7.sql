@@ -19,7 +19,8 @@ declare
         from OSRODKI O
                  join EGZAMINY E on O.ID_OSRODEK = E.ID_OSRODEK
         where DATA_EGZAMIN in
-              (select distinct DATA_EGZAMIN from EGZAMINY order by DATA_EGZAMIN desc fetch first 3 rows only);
+              (select distinct DATA_EGZAMIN from EGZAMINY order by DATA_EGZAMIN desc fetch first 3 rows only)
+        order by DATA_EGZAMIN desc;
     v_nt_osrodki NT_Osrodki := NT_Osrodki();
     i number := 1;
 begin
