@@ -30,9 +30,9 @@ DECLARE
                imie,
                EXTRACT(YEAR FROM DATA_EGZAMIN)  AS rok,
                EXTRACT(MONTH FROM DATA_EGZAMIN) AS miesiac,
-               COUNT(*)                         AS liczba_studentow
+               COUNT(distinct ID_STUDENT)       AS liczba_studentow
         FROM Egzaminatorzy
-                 JOIN EGZAMINY
+                 LEFT JOIN EGZAMINY
                       ON Egzaminatorzy.id_egzaminator = Egzaminy.id_egzaminator
         GROUP BY Egzaminatorzy.id_egzaminator,
                  nazwisko,
@@ -59,6 +59,9 @@ BEGIN
                 v_nazwisko := r_egzaminator.nazwisko;
                 v_imie := r_egzaminator.imie;
                 v_egzaminy := TypEgzaminyEgzaminatoraTab();
+            END IF;
+            IF r_egzaminator.rok IS NULL THEN
+                CONTINUE;
             END IF;
             v_egzamin :=
                     TypEgzaminyEgzaminatora(r_egzaminator.rok, r_egzaminator.miesiac, r_egzaminator.liczba_studentow);
