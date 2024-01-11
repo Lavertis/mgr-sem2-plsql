@@ -8,7 +8,7 @@ declare
     too_many_exams exception;
     exam_count number := 0;
     cursor lata_egzaminow_w_osrodku(id_osrodka number) is
-        select extract(year from DATA_EGZAMIN) as rok
+        select distinct extract(year from DATA_EGZAMIN) as rok
         from EGZAMINY
         where ID_OSRODEK = id_osrodka;
 
@@ -31,21 +31,25 @@ begin
                     loop
                         for rok in lata_egzaminow_w_osrodku(osrodek.ID_OSRODEK)
                             loop
-                                exam_count := egzaminy_egzaminatora_w_osrodku_w_roku(
-                                        egzaminator.ID_EGZAMINATOR,
-                                        osrodek.ID_OSRODEK,
-                                        rok.rok);
-                                if exam_count > 50 then
-                                    raise too_many_exams;
-                                end if;
+                                begin
+                                    exam_count := egzaminy_egzaminatora_w_osrodku_w_roku(
+                                            egzaminator.ID_EGZAMINATOR,
+                                            osrodek.ID_OSRODEK,
+                                            rok.rok);
+                                    if exam_count > 50 then
+                                        raise too_many_exams;
+                                    end if;
+                                exception
+                                    when too_many_exams then
+                                        dbms_output.put_line(
+                                                'Egzaminator ' || egzaminator.NAZWISKO || ' ' || egzaminator.IMIE ||
+                                                ' przeprowadzil ' || exam_count || ' egzaminow w roku ' || rok.rok ||
+                                                ' w osrodku ' || osrodek.NAZWA_OSRODEK || ' (' || osrodek.ID_OSRODEK ||
+                                                ')'
+                                        );
+                                end;
                             end loop;
                     end loop;
-            exception
-                when too_many_exams then
-                    dbms_output.put_line(
-                            'Egzaminator ' || egzaminator.NAZWISKO || ' ' || egzaminator.IMIE ||
-                            ' przeprowadzil wiecej niz 50 egzaminow w tym samym osrodku w jednym roku'
-                    );
             end;
         end loop;
 end;
