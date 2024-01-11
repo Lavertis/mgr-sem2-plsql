@@ -7,7 +7,7 @@ declare
     cursor osrodki_z_egzaminami is
         select distinct O.ID_OSRODEK, O.NAZWA_OSRODEK
         from EGZAMINY E
-                 join LAB.OSRODKI O on O.ID_OSRODEK = E.ID_OSRODEK
+                 join OSRODKI O on O.ID_OSRODEK = E.ID_OSRODEK
         order by O.ID_OSRODEK;
     CURSOR ostatnie_3_dni_egzaminowania_w_osrodku(idOsrodka OSRODKI.id_osrodek%type) IS
         SELECT DISTINCT DATA_EGZAMIN
