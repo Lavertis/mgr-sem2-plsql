@@ -29,11 +29,11 @@ begin
             for c1_row in c1(year_row.year)
                 loop
                     DBMS_OUTPUT.PUT_LINE(
-                                year_row.year || ' ' ||
-                                c1_row.ID_STUDENT || ' ' ||
-                                c1_row.NAZWISKO || ' ' ||
-                                c1_row.IMIE || ' ' ||
-                                c1_row.exam_count
+                            year_row.year || ' ' ||
+                            c1_row.ID_STUDENT || ' ' ||
+                            c1_row.NAZWISKO || ' ' ||
+                            c1_row.IMIE || ' ' ||
+                            c1_row.exam_count
                     );
                 end loop;
         end loop;

@@ -95,45 +95,51 @@
 -- END;
 
 DECLARE
-   FUNCTION getDataOstatniegoEgzaminu(student_id IN VARCHAR) RETURN DATE IS
-      last_exam_date DATE;
-   BEGIN
-      SELECT MAX(DATA_EGZAMIN) INTO last_exam_date
-      FROM EGZAMINY
-      WHERE ID_STUDENT = student_id AND zdal = 'T';
-      RETURN last_exam_date;
-   END getDataOstatniegoEgzaminu;
+    FUNCTION getDataOstatniegoEgzaminu(student_id IN VARCHAR) RETURN DATE IS
+        last_exam_date DATE;
+    BEGIN
+        SELECT MAX(DATA_EGZAMIN)
+        INTO last_exam_date
+        FROM EGZAMINY
+        WHERE ID_STUDENT = student_id
+          AND zdal = 'T';
+        RETURN last_exam_date;
+    END getDataOstatniegoEgzaminu;
 
-   FUNCTION czyZdalWszystkiePrzedmioty(student_id IN VARCHAR) RETURN BOOLEAN IS
-      liczba_egzaminow NUMBER;
-       vCourseNumber number ;
-       vPassedCourseNumber number ;
-   BEGIN
-     SELECT COUNT(*) INTO vCourseNumber FROM przedmioty ;
-     SELECT COUNT(*) INTO vPassedCourseNumber FROM egzaminy
-     		WHERE id_student = student_id and zdal = 'T' ;
-		 IF vCourseNumber = vPassedCourseNumber THEN
-     		RETURN TRUE ;
-     ELSE
-     		RETURN FALSE;
-		END IF ;
-   END czyZdalWszystkiePrzedmioty;
+    FUNCTION czyZdalWszystkiePrzedmioty(student_id IN VARCHAR) RETURN BOOLEAN IS
+        liczba_egzaminow    NUMBER;
+        vCourseNumber       number ;
+        vPassedCourseNumber number ;
+    BEGIN
+        SELECT COUNT(*) INTO vCourseNumber FROM przedmioty;
+        SELECT COUNT(*)
+        INTO vPassedCourseNumber
+        FROM egzaminy
+        WHERE id_student = student_id
+          and zdal = 'T';
+        IF vCourseNumber = vPassedCourseNumber THEN
+            RETURN TRUE ;
+        ELSE
+            RETURN FALSE;
+        END IF;
+    END czyZdalWszystkiePrzedmioty;
 
-   PROCEDURE updateStudentData(student_id IN VARCHAR) AS
-      data DATE;
-   BEGIN
-      data := getDataOstatniegoEgzaminu(student_id);
-      UPDATE Studenci
-      SET Nr_ECDL = student_id,
-          Data_ECDL = data
-      WHERE ID_Student = student_id;
-      COMMIT;
-   END updateStudentData;
+    PROCEDURE updateStudentData(student_id IN VARCHAR) AS
+        data DATE;
+    BEGIN
+        data := getDataOstatniegoEgzaminu(student_id);
+        UPDATE Studenci
+        SET Nr_ECDL   = student_id,
+            Data_ECDL = data
+        WHERE ID_Student = student_id;
+        COMMIT;
+    END updateStudentData;
 
 BEGIN
-   FOR student_id IN (SELECT ID_Student FROM Studenci) LOOP
-      IF czyZdalWszystkiePrzedmioty(student_id.ID_Student) THEN
-         updateStudentData(student_id.ID_Student);
-      END IF;
-   END LOOP;
+    FOR student_id IN (SELECT ID_Student FROM Studenci)
+        LOOP
+            IF czyZdalWszystkiePrzedmioty(student_id.ID_Student) THEN
+                updateStudentData(student_id.ID_Student);
+            END IF;
+        END LOOP;
 END;

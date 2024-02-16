@@ -61,9 +61,9 @@ BEGIN
                 FOR vc3 IN c3(vMaxNumOfStudents, vc1.rok)
                     LOOP
                         DBMS_OUTPUT.PUT_LINE(
-                                    'Rok: ' || vc1.rok ||
-                                    ', Nazwa przedmiotu: ' || vc3.nazwa_przedmiot ||
-                                    ', Liczba studentów: ' || vc3.liczba_studentow
+                                'Rok: ' || vc1.rok ||
+                                ', Nazwa przedmiotu: ' || vc3.nazwa_przedmiot ||
+                                ', Liczba studentów: ' || vc3.liczba_studentow
                         );
                     END LOOP;
                 CLOSE c2;

@@ -33,8 +33,8 @@ begin
         loop
             if czyStudentZdawal(student.ID_STUDENT) then
                 dbms_output.put_line(
-                            student.IMIE || ' ' || student.NAZWISKO || ': ' ||
-                            punktyZEgzaminowStudenta(student.ID_STUDENT)
+                        student.IMIE || ' ' || student.NAZWISKO || ': ' ||
+                        punktyZEgzaminowStudenta(student.ID_STUDENT)
                 );
             else
                 dbms_output.put_line(student.IMIE || ' ' || student.NAZWISKO || ': ' || 'Student nie zdawał egzaminów');

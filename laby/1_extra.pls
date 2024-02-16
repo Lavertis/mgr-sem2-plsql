@@ -8,16 +8,34 @@
 
 -- TODO not finished
 
-create or replace type TypEgzaminator as object (id_egzaminator number(4), nazwisko varchar2(50), imie varchar2(25));
-create or replace type TypEgzaminy as object (rok varchar(4), miesiac varchar2(15), lEgzaminow number(5), lStundentow number(6));
-create or replace type TypKolEgzaminy is table of TypEgzaminy ;
-create table RaportEgz (EgzaminatorInfo TypEgzaminator, EgzaminyInfo TypKolEgzaminy) nested table EgzaminyInfo store as AEgzaminyInfo ;
+create or replace type TypEgzaminator as object
+(
+    id_egzaminator number(4),
+    nazwisko       varchar2(50),
+    imie           varchar2(25)
+);
+create or replace type TypEgzaminy as object
+(
+    rok         varchar(4),
+    miesiac     varchar2(15),
+    lEgzaminow  number(5),
+    lStundentow number(6)
+);
+create or replace type TypKolEgzaminy is table of TypEgzaminy;
+create table RaportEgz
+(
+    EgzaminatorInfo TypEgzaminator,
+    EgzaminyInfo    TypKolEgzaminy
+) nested table EgzaminyInfo store as AEgzaminyInfo;
 
 declare
-	RecEgzaminator TypEgzaminator := TypEgzaminator() ;
-	cursor c1 is select id_egzaminator, nazwisko, imie from egzaminatorzy order by 1 ;
+    RecEgzaminator TypEgzaminator := TypEgzaminator();
+    cursor c1 is select id_egzaminator, nazwisko, imie
+                 from egzaminatorzy
+                 order by 1;
 begin
-		for vc1 in c1 loop
-    		RecEgzaminator := TypEgzaminator(vc1.id_egzaminator, vc1.nazwisko, vc1.imie) ;
-    end loop ;
+    for vc1 in c1
+        loop
+            RecEgzaminator := TypEgzaminator(vc1.id_egzaminator, vc1.nazwisko, vc1.imie);
+        end loop;
 end ;

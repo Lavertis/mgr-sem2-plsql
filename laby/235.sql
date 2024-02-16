@@ -25,13 +25,14 @@ CREATE TABLE Analityka
 ) NESTED TABLE KolOsrodkow STORE AS AKolOSrodkow;
 
 DECLARE
-    CURSOR c1 IS SELECT id_egzaminator, imie, nazwisko
-                 FROM egzaminatorzy
-                 ORDER BY 3, 2;
-    CURSOR c2 IS SELECT id_osrodek, nazwa_osrodek
-                 FROM osrodki
-                 ORDER BY 2;
-
+    CURSOR c1 IS
+        SELECT id_egzaminator, imie, nazwisko
+        FROM egzaminatorzy
+        ORDER BY 3, 2;
+    CURSOR c2 IS
+        SELECT id_osrodek, nazwa_osrodek
+        FROM osrodki
+        ORDER BY 2;
     legzaminow  NUMBER;
     KolOsrodkow TypKolOsrodkow;
 BEGIN

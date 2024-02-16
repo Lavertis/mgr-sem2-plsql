@@ -27,28 +27,31 @@ CREATE TABLE Raport_Roczny
 
 DECLARE
     egzaminatorzy TypKolEgzaminator;
-    k             NUMBER := 0 ;
-    CURSOR c1 IS SELECT DISTINCT EXTRACT(YEAR FROM data_egzamin) AS year, EXTRACT(MONTH FROM data_egzamin) AS month
-                 FROM egzaminy
-                 GROUP BY EXTRACT(YEAR FROM data_egzamin), EXTRACT(MONTH FROM data_egzamin)
-                 ORDER BY 1, 2;
+    k NUMBER := 0 ;
+    CURSOR c1 IS
+        SELECT DISTINCT EXTRACT(YEAR FROM data_egzamin) AS year, EXTRACT(MONTH FROM data_egzamin) AS month
+        FROM egzaminy
+        GROUP BY EXTRACT(YEAR FROM data_egzamin), EXTRACT(MONTH FROM data_egzamin)
+        ORDER BY 1, 2;
 
     FUNCTION getKolEgzaminatorzy(d_year VARCHAR(4), d_month VARCHAR2(15)) RETURN TypKolEgzaminator IS
         Col_Egzaminatorzy TypKolEgzaminator := TypKolEgzaminator();
-        CURSOR c_egzaminatorzy IS SELECT DISTINCT e.id_egzaminator, egz.imie, egz.nazwisko
-                                  FROM egzaminy e
-                                           INNER JOIN egzaminatorzy egz ON e.id_egzaminator = egz.id_egzaminator
-                                  WHERE EXTRACT(YEAR FROM data_egzamin) = d_year
-                                    AND EXTRACT(MONTH FROM data_egzamin) = d_month;
-        CURSOR c_studenci(id_egzaminator NUMBER, year VARCHAR(4), month VARCHAR2(15)) IS SELECT DISTINCT e.id_student, imie, nazwisko
-                                                                FROM studenci s
-                                                                         INNER JOIN egzaminy e ON e.id_student = s.id_student
-                                                                WHERE e.id_egzaminator = id_egzaminator
-                                                                  AND EXTRACT(YEAR FROM data_egzamin) = year
-                                                                  AND EXTRACT(MONTH FROM data_egzamin) = month;
+        CURSOR c_egzaminatorzy IS
+            SELECT DISTINCT e.id_egzaminator, egz.imie, egz.nazwisko
+            FROM egzaminy e
+                     INNER JOIN egzaminatorzy egz ON e.id_egzaminator = egz.id_egzaminator
+            WHERE EXTRACT(YEAR FROM data_egzamin) = d_year
+              AND EXTRACT(MONTH FROM data_egzamin) = d_month;
+        CURSOR c_studenci(id_egzaminator NUMBER, year VARCHAR(4), month VARCHAR2(15)) IS
+            SELECT DISTINCT e.id_student, imie, nazwisko
+            FROM studenci s
+                     INNER JOIN egzaminy e ON e.id_student = s.id_student
+            WHERE e.id_egzaminator = id_egzaminator
+              AND EXTRACT(YEAR FROM data_egzamin) = year
+              AND EXTRACT(MONTH FROM data_egzamin) = month;
         Col_Studenci TypKolStudent;
-        i            NUMBER := 0 ;
-        j            NUMBER := 0;
+        i NUMBER := 0 ;
+        j NUMBER := 0;
     BEGIN
         FOR vc_egzaminatorzy IN c_egzaminatorzy
             LOOP

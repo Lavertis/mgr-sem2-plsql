@@ -32,8 +32,7 @@ DECLARE
                EXTRACT(MONTH FROM DATA_EGZAMIN) AS miesiac,
                COUNT(distinct ID_STUDENT)       AS liczba_studentow
         FROM Egzaminatorzy
-                 LEFT JOIN EGZAMINY
-                      ON Egzaminatorzy.id_egzaminator = Egzaminy.id_egzaminator
+                 LEFT JOIN EGZAMINY ON Egzaminatorzy.id_egzaminator = Egzaminy.id_egzaminator
         GROUP BY Egzaminatorzy.id_egzaminator,
                  nazwisko,
                  imie,

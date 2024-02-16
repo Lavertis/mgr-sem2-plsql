@@ -30,13 +30,17 @@ end ECDL_Validate;
 create or replace package body ECDL_Validate as
 
     function wprEgzPrzyZdanym(p_id_student VARCHAR2, p_id_przedmiot NUMBER, p_zdany VARCHAR2) return BOOLEAN is
-    v_zdany number;
+        v_zdany number;
     BEGIN
-        SELECT count(*) INTO v_zdany FROM egzaminy
-        WHERE ID_STUDENT = id_student AND ID_PRZEDMIOT = id_przedmiot AND ZDAL='T';
+        SELECT count(*)
+        INTO v_zdany
+        FROM egzaminy
+        WHERE ID_STUDENT = id_student
+          AND ID_PRZEDMIOT = id_przedmiot
+          AND ZDAL = 'T';
 
         IF v_zdany != 1 THEN
-                DBMS_OUTPUT.PUT_LINE('student nie zdal jeszcze z tego przedmiotu, rekord mozna wprowadzic');
+            DBMS_OUTPUT.PUT_LINE('student nie zdal jeszcze z tego przedmiotu, rekord mozna wprowadzic');
             RETURN FALSE;
         ELSE
             IF p_zdany = 'T' THEN
